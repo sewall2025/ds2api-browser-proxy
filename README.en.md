@@ -433,6 +433,13 @@ Workflow: `.github/workflows/release-artifacts.yml`
 - **Container publishing**: GHCR only (`ghcr.io/cjackhwang/ds2api`)
 - **Each binary archive includes**: the `ds2api` executable, `static/admin`, `config.example.json`, `.env.example`, `README.MD`, `README.en.md`, and `LICENSE`
 
+## Container Tag + GHCR Release (GitHub Actions)
+
+Workflow: `.github/workflows/release-ghcr.yml`
+
+- **Trigger**: manual `workflow_dispatch` with `version_type` (patch/minor/major)
+- **Actions**: bumps `VERSION`, creates a git tag, and builds/pushes GHCR images tagged with `vX.Y.Z`, `X.Y.Z`, and `latest`
+
 ## Disclaimer
 
 This project is built through reverse engineering and is provided for learning, research, personal experimentation, and internal validation only. No commercial authorization is granted, and no warranty of stability, fitness, or results is provided.
