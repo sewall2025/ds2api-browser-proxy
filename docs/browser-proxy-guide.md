@@ -88,6 +88,7 @@ docker compose up --build -d
 - 挂载 `./browser_profile:/data/browser_profile` 持久化浏览器 profile
 
 首次启动可能需要人工登录/验证码；完成后登录态会保存在 `browser_profile` 目录中。
+若宿主机目录权限过严，请先创建 `browser_profile` 并按你的安全策略授予容器可写权限（建议使用 `chown` 到运行容器的用户/用户组，而非 `chmod 777`）。
 
 > 如果你是本地直接运行（非 Docker），可继续使用 `./browser_profile`。
 
@@ -95,7 +96,7 @@ docker compose up --build -d
 
 ## 四、API 接口
 
-### 3.1 接口地址
+### 4.1 接口地址
 
 | 项目 | 值 |
 |------|-----|
@@ -103,16 +104,16 @@ docker compose up --build -d
 | 接口 | `POST /v1/chat/completions` |
 | 认证 | `Authorization: Bearer <api_key>` |
 
-### 3.2 请求头
+### 4.2 请求头
 
 ```http
 Authorization: Bearer sk-your-api-key
 Content-Type: application/json
 ```
 
-### 3.3 请求体格式
+### 4.3 请求体格式
 
-#### 3.3.1 纯文本消息（默认启用深度思考+智能搜索）
+#### 4.3.1 纯文本消息（默认启用深度思考+智能搜索）
 
 ```json
 {
@@ -125,7 +126,7 @@ Content-Type: application/json
 }
 ```
 
-#### 3.3.2 带图片的消息（识图模式）
+#### 4.3.2 带图片的消息（识图模式）
 
 ```json
 {
@@ -149,7 +150,7 @@ Content-Type: application/json
 }
 ```
 
-#### 3.3.3 流式响应
+#### 4.3.3 流式响应
 
 ```json
 {
@@ -161,7 +162,7 @@ Content-Type: application/json
 }
 ```
 
-### 3.4 双模式切换（重要！）
+### 4.4 双模式切换（重要！）
 
 > ⚠️ **安全提示**：直接 API 调用可能被官方检测并封禁账号！
 
@@ -205,7 +206,7 @@ Content-Type: application/json
 }
 ```
 
-### 3.5 支持的模型
+### 4.5 支持的模型
 
 | 模式 | 模型 | 类型 | 说明 |
 |------|------|------|------|
@@ -214,7 +215,7 @@ Content-Type: application/json
 | Direct API | `deepseek-v4-flash-direct` | 文本 | 快速模式（支持工具） |
 | Direct API | `deepseek-v4-pro-direct` | 文本 | 专家模式（支持工具） |
 
-### 3.6 请求参数说明
+### 4.6 请求参数说明
 
 | 参数 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
@@ -228,7 +229,7 @@ Content-Type: application/json
 
 ## 五、账号差异化处理
 
-### 4.1 模式说明
+### 5.1 模式说明
 
 | 模式 | 文件上传 | 联网搜索 | 深度思考 | 说明 |
 |------|----------|----------|----------|------|
@@ -236,7 +237,7 @@ Content-Type: application/json
 | 专家模式 | ❌ | ✅ | ✅ | 无文件上传 |
 | 识图模式 | ✅ | ❌ | ✅ | 图像功能 |
 
-### 4.2 自动切换逻辑
+### 5.2 自动切换逻辑
 
 ```
 客户端请求
@@ -256,7 +257,7 @@ Content-Type: application/json
 发送消息
 ```
 
-### 4.3 默认模式行为
+### 5.3 默认模式行为
 
 - **进入聊天页面时**：自动检查并开启「深度思考」和「智能搜索」
 - **已开启时**：跳过，不会重复点击
@@ -266,7 +267,7 @@ Content-Type: application/json
 
 ## 六、客户端示例
 
-### 5.1 cURL
+### 6.1 cURL
 
 ```bash
 # 纯文本消息
@@ -291,7 +292,7 @@ curl http://localhost:8080/v1/chat/completions \
   }'
 ```
 
-### 5.2 Python (OpenAI SDK)
+### 6.2 Python (OpenAI SDK)
 
 ```python
 from openai import OpenAI
@@ -321,7 +322,7 @@ for chunk in stream:
         print(chunk.choices[0].delta.content, end="")
 ```
 
-### 5.3 JavaScript (Node.js)
+### 6.3 JavaScript (Node.js)
 
 ```javascript
 import OpenAI from 'openai';
@@ -358,7 +359,7 @@ for await (const chunk of stream) {
 
 ## 七、响应格式
 
-### 6.1 流式响应
+### 7.1 流式响应
 
 ```json
 // 思考内容
@@ -371,7 +372,7 @@ for await (const chunk of stream) {
 {"choices":[{"delta":{},"finish_reason":"stop","index":0}],"usage":{"prompt_tokens":10,"completion_tokens":20,"total_tokens":30}}
 ```
 
-### 6.2 非流式响应
+### 7.2 非流式响应
 
 ```json
 {
@@ -397,7 +398,7 @@ for await (const chunk of stream) {
 }
 ```
 
-### 6.3 思考内容
+### 7.3 思考内容
 
 当启用深度思考时，思考内容会单独返回：
 
@@ -417,7 +418,7 @@ for await (const chunk of stream) {
 
 ## 八、日志与调试
 
-### 7.1 日志目录
+### 8.1 日志目录
 
 日志输出到控制台，可通过以下方式查看：
 
@@ -426,7 +427,7 @@ for await (const chunk of stream) {
 .\ds2api.exe
 ```
 
-### 7.2 关键日志标签
+### 8.2 关键日志标签
 
 | 标签 | 说明 |
 |------|------|
@@ -435,7 +436,7 @@ for await (const chunk of stream) {
 | `[stream_bridge]` | 流式数据桥接 |
 | `[injector]` | JS 注入相关 |
 
-### 7.3 调试建议
+### 8.3 调试建议
 
 1. **设置 `headless: false`**：可以看到真实的浏览器操作
 2. **检查 `user_data_dir`**：确保目录有写入权限
@@ -445,7 +446,7 @@ for await (const chunk of stream) {
 
 ## 九、常见问题
 
-### 8.1 浏览器启动失败
+### 9.1 浏览器启动失败
 
 **原因**：Chrome 进程残留或端口被占用
 
@@ -455,7 +456,7 @@ taskkill /F /IM chrome.exe /T
 .\ds2api.exe
 ```
 
-### 8.2 登录失败
+### 9.2 登录失败
 
 **原因**：账号密码错误或需要验证码
 
@@ -464,13 +465,13 @@ taskkill /F /IM chrome.exe /T
 2. 完成登录和验证码
 3. 删除 `user_data_dir` 目录后重试
 
-### 8.3 识图模式不可用
+### 9.3 识图模式不可用
 
 **原因**：账号未开通识图权限
 
 **解决**：系统会自动降级到快速模式，仍支持发送图片
 
-### 8.4 响应时间过长
+### 9.4 响应时间过长
 
 **可能原因**：
 - 网络延迟

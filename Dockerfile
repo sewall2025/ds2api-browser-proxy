@@ -44,7 +44,7 @@ RUN apt-get update \
 ENV CHROME_BIN=/usr/bin/chromium \
     CHROMIUM_PATH=/usr/bin/chromium
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-    CMD /usr/local/bin/busybox wget -qO- http://127.0.0.1:5001/healthz >/dev/null || exit 1
+    CMD /usr/local/bin/busybox wget -qO- "http://127.0.0.1:${PORT:-5001}/healthz" >/dev/null || exit 1
 
 FROM runtime-browser AS runtime-from-source
 COPY --from=go-builder /out/ds2api /usr/local/bin/ds2api

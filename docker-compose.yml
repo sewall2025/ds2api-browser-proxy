@@ -3,7 +3,7 @@ services:
     build:
       context: .
       target: final
-    image: ds2api-browser-proxy:local
+    image: ds2api:local
     container_name: ds2api
     restart: always
     shm_size: "1gb"
@@ -14,9 +14,8 @@ services:
       - "${DS2API_HOST_PORT:-8080}:5001"
     volumes:
       - ./config.json:/data/config.json   # 配置文件（持久化推荐路径）
-      - ./browser_profile:/data/browser_profile   # Browser Proxy 登录态持久化目录
+      - ./browser_profile:/data/browser_profile   # Browser Proxy profile persistence (login state)
     environment:
-      - PORT=5001
       - TZ=Asia/Shanghai
       - LOG_LEVEL=INFO
       - DS2API_ADMIN_KEY=${DS2API_ADMIN_KEY:-ds2api}

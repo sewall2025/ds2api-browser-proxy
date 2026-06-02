@@ -177,6 +177,7 @@ docker compose up --build -d
 > - `./browser_profile:/data/browser_profile` 持久化挂载（保留登录态）
 >
 > 首次启动 Browser Proxy 可能需要人工登录或验证码，完成后会复用 profile。
+> 若宿主机目录权限过严，请先创建 `browser_profile` 并按你的安全策略授予容器可写权限（建议使用 `chown` 到运行容器的用户/用户组，而非 `chmod 777`）。
 
 ### 1️⃣ 克隆项目
 
@@ -202,7 +203,7 @@ cp config.example.json config.json
   "browser_proxy": {
     "enabled": true,
     "headless": false,
-    "user_data_dir": "/data/browser_profile"
+    "user_data_dir": "./browser_profile"
   },
   
   "accounts": [
@@ -214,8 +215,6 @@ cp config.example.json config.json
   ]
 }
 ```
-
-> 本地非 Docker 运行时，可改为 `"user_data_dir": "./browser_profile"`。
 
 ### 3️⃣ 编译运行
 
