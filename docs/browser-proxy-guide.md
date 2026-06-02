@@ -29,8 +29,8 @@
 {
   "browser_proxy": {
     "enabled": true,
-    "headless": false,
-    "user_data_dir": "./browser_profile",
+    "headless": true,
+    "user_data_dir": "/data/browser_profile",
     "timeout_seconds": 180,
     "poll_interval_ms": 50
   },
@@ -50,7 +50,7 @@
 |--------|------|--------|------|
 | `enabled` | bool | `false` | 是否启用浏览器代理模式 |
 | `headless` | bool | `false` | 是否隐藏浏览器窗口（调试时设为 `false`） |
-| `user_data_dir` | string | `"./browser_profile"` | 浏览器配置文件目录（用于保持登录状态） |
+| `user_data_dir` | string | `"./browser_profile"` | 浏览器配置文件目录（用于保持登录状态，Docker 推荐 `/data/browser_profile`） |
 | `timeout_seconds` | int | `180` | 操作超时时间（秒） |
 | `poll_interval_ms` | int | `50` | 流式数据轮询间隔（毫秒） |
 
@@ -71,7 +71,29 @@
 
 ---
 
-## 三、API 接口
+## 三、Docker 部署（默认 Browser Proxy）
+
+项目默认 `Dockerfile` 最终镜像已内置 Chromium，可直接用于 Browser Proxy。
+
+```bash
+cp config.example.json config.json
+docker compose up --build -d
+```
+
+`docker-compose.yml` 默认行为：
+
+- 构建本仓库镜像（`target: final`）
+- 对外端口 `8080`，容器端口 `5001`（`8080:5001`）
+- `shm_size: "1gb"`，降低 Chromium `/dev/shm` 问题
+- 挂载 `./browser_profile:/data/browser_profile` 持久化浏览器 profile
+
+首次启动可能需要人工登录/验证码；完成后登录态会保存在 `browser_profile` 目录中。
+
+> 如果你是本地直接运行（非 Docker），可继续使用 `./browser_profile`。
+
+---
+
+## 四、API 接口
 
 ### 3.1 接口地址
 
@@ -204,7 +226,7 @@ Content-Type: application/json
 
 ---
 
-## 四、账号差异化处理
+## 五、账号差异化处理
 
 ### 4.1 模式说明
 
@@ -242,7 +264,7 @@ Content-Type: application/json
 
 ---
 
-## 五、客户端示例
+## 六、客户端示例
 
 ### 5.1 cURL
 
@@ -334,7 +356,7 @@ for await (const chunk of stream) {
 
 ---
 
-## 六、响应格式
+## 七、响应格式
 
 ### 6.1 流式响应
 
@@ -393,7 +415,7 @@ for await (const chunk of stream) {
 
 ---
 
-## 七、日志与调试
+## 八、日志与调试
 
 ### 7.1 日志目录
 
@@ -421,7 +443,7 @@ for await (const chunk of stream) {
 
 ---
 
-## 八、常见问题
+## 九、常见问题
 
 ### 8.1 浏览器启动失败
 
@@ -459,7 +481,7 @@ taskkill /F /IM chrome.exe /T
 
 ---
 
-## 九、文件结构
+## 十、文件结构
 
 ```
 internal/

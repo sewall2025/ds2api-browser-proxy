@@ -139,6 +139,45 @@ curl http://localhost:8080/v1/chat/completions \
 - **Chrome 浏览器** (最新版本)
 - **DeepSeek 网页版账号**
 
+### 🐳 Docker Compose（默认 Browser Proxy）
+
+仓库默认镜像（`Dockerfile` 的 `final`）已内置 Chromium 运行依赖，可直接运行 Browser Proxy。
+
+1. 准备配置：
+
+```bash
+cp config.example.json config.json
+```
+
+2. 在 `config.json` 中确认：
+
+```json
+{
+  "browser_proxy": {
+    "enabled": true,
+    "headless": true,
+    "user_data_dir": "/data/browser_profile"
+  }
+}
+```
+
+3. 启动（会自动构建本仓库镜像）：
+
+```bash
+docker compose up --build -d
+```
+
+4. 访问地址：
+
+- 默认 `http://localhost:8080`（映射 `8080:5001`）
+- 可通过 `DS2API_HOST_PORT` 覆盖对外端口
+
+> `docker-compose.yml` 已包含：
+> - `shm_size: "1gb"`（降低 Chromium `/dev/shm` 问题）
+> - `./browser_profile:/data/browser_profile` 持久化挂载（保留登录态）
+>
+> 首次启动 Browser Proxy 可能需要人工登录或验证码，完成后会复用 profile。
+
 ### 1️⃣ 克隆项目
 
 ```bash
@@ -163,7 +202,7 @@ cp config.example.json config.json
   "browser_proxy": {
     "enabled": true,
     "headless": false,
-    "user_data_dir": "./browser_profile"
+    "user_data_dir": "/data/browser_profile"
   },
   
   "accounts": [
@@ -175,6 +214,8 @@ cp config.example.json config.json
   ]
 }
 ```
+
+> 本地非 Docker 运行时，可改为 `"user_data_dir": "./browser_profile"`。
 
 ### 3️⃣ 编译运行
 
