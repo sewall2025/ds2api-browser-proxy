@@ -35,7 +35,18 @@ COPY --from=busybox-tools /bin/busybox /usr/local/bin/busybox
 EXPOSE 5001
 CMD ["/usr/local/bin/ds2api"]
 
-FROM runtime-base AS runtime-from-source
+FROM runtime-base AS runtime-browser
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends chromium \
+    && mkdir -p /data/browser_profile \
+    && chown -R ds2api:ds2api /data/browser_profile \
+    && rm -rf /var/lib/apt/lists/*
+ENV CHROME_BIN=/usr/bin/chromium \
+    CHROMIUM_PATH=/usr/bin/chromium
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+    CMD /usr/local/bin/busybox wget -qO- "http://127.0.0.1:${PORT:-5001}/healthz" >/dev/null || exit 1
+
+FROM runtime-browser AS runtime-from-source
 COPY --from=go-builder /out/ds2api /usr/local/bin/ds2api
 
 COPY --from=go-builder --chown=ds2api:ds2api /app/config.example.json /app/config.example.json
@@ -60,7 +71,7 @@ RUN set -eux; \
     cp "${PKG_DIR}/config.example.json" /out/config.example.json; \
     cp -R "${PKG_DIR}/static/admin" /out/static/admin
 
-FROM runtime-base AS runtime-from-dist
+FROM runtime-browser AS runtime-from-dist
 COPY --from=dist-extract /out/ds2api /usr/local/bin/ds2api
 
 COPY --from=dist-extract --chown=ds2api:ds2api /out/config.example.json /app/config.example.json
